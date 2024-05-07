@@ -15,26 +15,22 @@ from llama_index.core import StorageContext, VectorStoreIndex
 from .conftest import lock
 
 
-def test_required_vars():
-    """Confirm that the environment has all it needs."""
-    required_vars = ["OPENAI_API_KEY", "MONGODB_URI"]
-    for var in required_vars:
-        try:
-            os.environ[var]
-        except KeyError:
-            pytest.fail(f"Required var '{var}' not in os.environ")
-
-
+@pytest.mark.requires_mongodb_uri()
 def test_mongodb_connection(atlas_client):
     """Confirm that the connection to the datastore works."""
+    assert "MONGODB_URI" in os.environ
     assert atlas_client.admin.command("ping")["ok"]
 
 
+@pytest.mark.requires_mongodb_uri()
+@pytest.mark.requires_openai_key()
 def test_index(documents, vector_store):
     """End-to-end example from essay and query to response.
 
     via NodeParser, LLM Embedding, VectorStore, and Synthesizer.
     """
+    assert "OPENAI_API_KEY" in os.environ
+    assert "MONGODB_URI" in os.environ
     with lock:
         vector_store._collection.delete_many({})
         sleep(2)
