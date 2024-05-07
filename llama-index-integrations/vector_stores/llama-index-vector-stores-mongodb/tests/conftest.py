@@ -49,7 +49,7 @@ def nodes(documents):
 db_name = os.environ.get("MONGODB_DATABASE", "llama_index_test_db")
 collection_name = os.environ.get("MONGODB_COLLECTION", "llama_index_test_vectorstore")
 index_name = os.environ.get("MONGODB_INDEX", "vector_index")
-MONGODB_URI = os.environ.get("MONGODB_URI", "")
+MONGODB_URI = os.environ.get("MONGODB_URI")
 
 
 @pytest.fixture(autouse=True)
