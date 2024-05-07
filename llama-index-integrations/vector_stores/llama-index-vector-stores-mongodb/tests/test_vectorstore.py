@@ -1,14 +1,10 @@
-import os
 from time import sleep
 
-import openai
 from llama_index.core.schema import Document, TextNode
 from llama_index.core.vector_stores.types import VectorStoreQuery
 from llama_index.embeddings.openai import OpenAIEmbedding
 
 from .conftest import lock
-
-openai.api_key = os.environ["OPENAI_API_KEY"]
 
 
 def test_documents(documents: list[Document]):
@@ -17,13 +13,15 @@ def test_documents(documents: list[Document]):
     assert isinstance(documents[0], Document)
 
 
-def test_nodes(nodes):
+def test_nodes(nodes, skip_unless_openai_api_key):
     """Test Ingestion Pipeline transforming documents into nodes with embeddings."""
     assert isinstance(nodes, list)
     assert isinstance(nodes[0], TextNode)
 
 
-def test_vectorstore(nodes, vector_store):
+def test_vectorstore(
+    nodes, vector_store, skip_unless_openai_api_key, skip_unless_mongodb_uri
+):
     """Test add, query, delete API of MongoDBAtlasVectorSearch."""
     with lock:
         # 0. Clean up the collection

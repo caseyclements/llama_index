@@ -6,31 +6,19 @@ have a running MongoDB Atlas Cluster, and
 provide a valid OPENAI_API_KEY.
 """
 
-import os
 from time import sleep
-
-import pytest
 from llama_index.core import StorageContext, VectorStoreIndex
-
 from .conftest import lock
 
 
-def test_required_vars():
-    """Confirm that the environment has all it needs."""
-    required_vars = ["OPENAI_API_KEY", "MONGO_URI"]
-    for var in required_vars:
-        try:
-            os.environ[var]
-        except KeyError:
-            pytest.fail(f"Required var '{var}' not in os.environ")
-
-
-def test_mongodb_connection(atlas_client):
+def test_mongodb_connection(atlas_client, skip_unless_mongodb_uri):
     """Confirm that the connection to the datastore works."""
     assert atlas_client.admin.command("ping")["ok"]
 
 
-def test_index(documents, vector_store):
+def test_index(
+    documents, vector_store, skip_unless_openai_api_key, skip_unless_mongodb_uri
+):
     """End-to-end example from essay and query to response.
 
     via NodeParser, LLM Embedding, VectorStore, and Synthesizer.
